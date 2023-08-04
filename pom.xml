@@ -20,6 +20,7 @@
     <description>This is a collection of assistive tools</description>
     <properties>
         <java.version>1.8</java.version>
+        <hutool.version>5.8.11</hutool.version>
     </properties>
 
     <!-- library dependencies -->
@@ -96,8 +97,13 @@
         <!-- hutool -->
         <dependency>
             <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <version>5.8.11</version>
+            <artifactId>hutool-core</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-http</artifactId>
+            <version>${hutool.version}</version>
         </dependency>
     </dependencies>
 

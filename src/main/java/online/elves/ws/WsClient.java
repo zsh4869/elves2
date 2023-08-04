@@ -27,17 +27,17 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class WsClient {
-    
+
     /**
      * 会话
      */
     public static Map<String, Pair<LocalDateTime, Session>> session = Maps.newHashMapWithExpectedSize(128);
-    
+
     /**
      * 聊天室特殊key
      */
     public static String SpecKey = "session.elves.online";
-    
+
     /**
      * 开启
      */
@@ -85,7 +85,9 @@ public class WsClient {
             }
         } catch (Exception e) {
             log.warn("客户端开启失败...{}", e.getMessage());
+            // 直接退出
+            System.exit(0);
         }
     }
-    
+
 }

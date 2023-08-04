@@ -28,6 +28,8 @@ public class FUtil {
             return response.body();
         } catch (Exception e) {
             log.warn("some request get error...{}", e.getMessage());
+            // 怀疑坐牢了...直接自杀吧
+            System.exit(0);
         }
         return null;
     }
@@ -46,6 +48,8 @@ public class FUtil {
             return response.body();
         } catch (Exception e) {
             log.warn("some request post error...{}", e.getMessage());
+            // 怀疑坐牢了...直接自杀吧
+            System.exit(0);
         }
         return null;
     }
@@ -64,6 +68,8 @@ public class FUtil {
             return JSON.parseObject(response.body(), FResp.class);
         } catch (Exception e) {
             log.warn("some request get error...{}", e.getMessage());
+            // 怀疑坐牢了...直接自杀吧
+            System.exit(0);
         }
         return new FResp();
     }
@@ -82,6 +88,8 @@ public class FUtil {
             return JSON.parseObject(response.body(), FResp.class);
         } catch (Exception e) {
             log.warn("some request post error...{}", e.getMessage());
+            // 怀疑坐牢了...直接自杀吧
+            System.exit(0);
         }
         return new FResp();
     }

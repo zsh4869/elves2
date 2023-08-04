@@ -43,7 +43,7 @@ public class FunnyAnalysis extends CommandAnalysis {
     /**
      * 关键字
      */
-    private static final List<String> keys = Arrays.asList("去打劫", "笑话", "捞鱼丸", "等级", "发个红包", "V50", "v50", "VME50", "vivo50", "今日水分", "15", "欧皇们", "非酋们", "探路者", "触发词", "520", "标记", "看看冰柜", "爱的回馈");
+    private static final List<String> keys = Arrays.asList("去打劫", "笑话", "捞鱼丸", "等级", "发个红包", "V50", "v50", "VME50", "vivo50", "今日水分", "15", "欧皇们", "非酋们", "探路者", "触发词", "爱的回馈");
 
     /**
      * 打劫概率
@@ -151,65 +151,6 @@ public class FunnyAnalysis extends CommandAnalysis {
                         }
                     } else {
                         Fish.send2User(userName, "亲, 每人只有三次抽奖机会, 你已经用完啦~期待下次活动与你相遇, 嘿嘿");
-                    }
-                }
-                break;
-            case "看看冰柜":
-                Fish.sendMsg("@" + userName + " " + CrLevel.getCrLvName(userName) + " 偷偷给你看哦~\n\n> 冰柜里还有`" + RedisUtil.get("CR:GAME:BIU:JACKPOT") + "`个鱼翅");
-                break;
-            case "标记":
-                // 当前时间
-                LocalDateTime biuNow = LocalDateTime.now();
-                // 纯时间
-                LocalTime localTime = biuNow.toLocalTime();
-                // 当前小时数
-                int hour = localTime.getHour();
-                // 宵禁内 8 10 12 14 16 有效
-                if (!Const.CHAT_ROOM_BIU_FISH_TIMES.contains(hour)) {
-                    Fish.sendMsg("@" + userName + " " + CrLevel.getCrLvName(userName) + " biu~🐟 活动尚未开始或者正在结算中~");
-                } else {
-                    // 财阀标记
-                    String biuCount = RedisUtil.get(Const.CURRENCY_TIMES_PREFIX + userName);
-                    if (StringUtils.isNotBlank(biuCount)) {
-                        // 每日游戏
-                        String biuKey = "CR:GAME:BIU:LIMIT:" + userName;
-                        // 还没标记过
-                        if (StringUtils.isBlank(RedisUtil.get(biuKey))) {
-                            // 检查对象
-                            if (RegularUtil.isNum1Max(commandDesc) && Const.CHAT_ROOM_BIU_FISH.contains(Integer.valueOf(commandDesc))) {
-                                // 扣鱼翅
-                                if (Integer.parseInt(biuCount) < 2) {
-                                    Fish.sendMsg("@" + userName + " " + CrLevel.getCrLvName(userName) + " 糟糕, 渔民大人! 你鱼翅不够了~(需要`2鱼翅`参与哦!)");
-                                } else {
-                                    // 下一个小时的45分过期
-                                    int timeOut = Long.valueOf(Duration.between(biuNow, LocalDateTime.of(biuNow.toLocalDate(), LocalTime.of(hour + 1, 45, 0))).getSeconds()).intValue();
-                                    // 过期对象
-                                    RedisUtil.set(biuKey, userName, timeOut);
-                                    // 扣费
-                                    CurrencyService.sendCurrency(userName, -2, "聊天室活动-鱼鱼标记赛-报名费-标记[" + commandDesc + "]-(`" + hour + "点`赛)");
-                                    // 放入冰柜
-                                    RedisUtil.modify("CR:GAME:BIU:JACKPOT", 3);
-                                    // 标记鱼鱼
-                                    String biu = "CR:GAME:BIU:" + commandDesc;
-                                    // 标记列表
-                                    String biuRedis = RedisUtil.get(biu);
-                                    if (StringUtils.isBlank(biuRedis)) {
-                                        RedisUtil.set(biu, JSON.toJSONString(Lists.newArrayList(userName)), timeOut);
-                                    } else {
-                                        List<String> parsed = JSON.parseArray(biuRedis, String.class);
-                                        parsed.add(userName);
-                                        // 重新放回去
-                                        RedisUtil.reSet(biu, JSON.toJSONString(parsed), timeOut);
-                                    }
-                                }
-                            } else {
-                                Fish.sendMsg("@" + userName + " " + CrLevel.getCrLvName(userName) + " 你标记的是什么呀~鱼鱼编号`1-8`哦~");
-                            }
-                        } else {
-                            Fish.sendMsg("@" + userName + " " + CrLevel.getCrLvName(userName) + " 你已经标记过鱼鱼啦! 耐心等待精灵biu吧!");
-                        }
-                    } else {
-                        Fish.sendMsg("@" + userName + " " + CrLevel.getCrLvName(userName) + " 先成为渔民吧~");
                     }
                 }
                 break;

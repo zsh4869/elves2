@@ -59,7 +59,7 @@ public class UserChat {
     
     @OnError
     public void processError(Throwable t) {
-        log.info("私聊异常中断...", t.getMessage());
+        log.info("私聊异常中断...{}", t.getMessage());
     }
     
     @OnClose

@@ -10,6 +10,7 @@ import online.elves.service.FService;
 import online.elves.service.strategy.CommandAnalysis;
 import online.elves.third.apis.IceNet;
 import online.elves.third.fish.Fish;
+import online.elves.utils.DateUtil;
 import online.elves.utils.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 网管命令分析
@@ -158,6 +160,42 @@ public class AdminAnalysis extends CommandAnalysis {
                     break;
                 case "补偿":
                     Fish.sendMsg("@" + userName + " " + CrLevel.getCrLvName(userName) + " " + " : 我就知道(p≧w≦q) 你要给自己加片段对不对...  ");
+                    break;
+                case "欢乐时光":
+                    if (StringUtils.isBlank(RedisUtil.get(Const.CURRENCY_HAPPY_TIME))) {
+                        // 限制次数 3次?
+                        String timeKey = "CR:GAME:CURRENCY:HAPPY:TIME:LIMIT";
+                        // 每人一次
+                        String timeUserKey = "CR:GAME:CURRENCY:HAPPY:TIME:LIMIT:USER:" + userName;
+                        if (StringUtils.isBlank(RedisUtil.get(timeUserKey))) {
+                            // 当前叠加数
+                            int stValue = Integer.parseInt(Optional.ofNullable(RedisUtil.get(timeKey)).orElse("0"));
+                            // 没有人就是 1
+                            switch (stValue) {
+                                case 0:
+                                    Fish.sendMsg("欢乐时光, 开启等待中~ 还需`2个`玩家");
+                                    break;
+                                case 1:
+                                    Fish.sendMsg("欢乐时光, 开启等待中~ 还需`1个`玩家");
+                                    break;
+                                case 2:
+                                    RedisUtil.set(Const.CURRENCY_HAPPY_TIME, "happyTime", 60);
+                                    Fish.sendMsg("欢乐时光, 鱼翅兑换价格 1-64 随机数. 限时 1 min. 冲鸭~");
+                                    break;
+                                default:
+                                    Fish.sendMsg("欢乐时光技能冷却中...请耐心等待, 冷却时间 15分钟");
+                                    break;
+                            }
+                            // 玩家数量加一
+                            RedisUtil.reSet(timeKey, String.valueOf(stValue + 1), 15 * 60);
+                            // 玩家加key
+                            RedisUtil.set(timeUserKey, DateUtil.nowStr(), RedisUtil.getExpire(timeKey));
+                        } else {
+                            Fish.sendMsg("@" + userName + " " + CrLevel.getCrLvName(userName) + " " + " 嘻嘻, 你已经参与过咯. 技能冷却中, 冷却时间 15分钟 ");
+                        }
+                    } else {
+                        Fish.sendMsg("鱼翅欢乐时光开启中. 冲鸭~");
+                    }
                     break;
                 default:
                     Fish.sendMsg("@" + userName + " " + CrLevel.getCrLvName(userName) + " " + " : \n\n 你在说什么, 我怎么听不明白呢🙄 ");

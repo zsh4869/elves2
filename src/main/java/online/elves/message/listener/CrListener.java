@@ -51,6 +51,14 @@ public class CrListener {
                 Long oId = Long.valueOf(crMsg.getOId());
                 if (userNickname.contains("摸鱼派官方巡逻机器人") || userName.contains("摸鱼派官方巡逻机器人")) {
                     log.info("人工智障说: {}", md);
+                    if (md.contains("@sevenSummer") && md.contains("重新连接")) {
+                        // 自杀
+                        System.exit(0);
+                    }
+                    if (md.contains("您") && md.contains("6小时未活跃") && md.contains("刷新页面")) {
+                        // 自杀
+                        System.exit(0);
+                    }
                     if (md.contains("用户会话详情")) {
                         List<String> x = Arrays.asList(md.split("<summary>用户会话详情</summary>")[1].split("<br></details>")[0].split("<br>"));
                         // 需要断开的用户

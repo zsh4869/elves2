@@ -94,7 +94,9 @@ public class FService {
         // 获取用户 每次都查询一下. 防止改昵称
         FUser fUser = Fish.getUser(userName);
         // 相信阿达
-        assert fUser != null;
+        if (Objects.isNull(fUser)) {
+            return null;
+        }
         // 不检查参数了, 都是自己人
         QueryWrapper<User> cond = new QueryWrapper<>();
         // 用户编号
