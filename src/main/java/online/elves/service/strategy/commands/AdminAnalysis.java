@@ -134,14 +134,14 @@ public class AdminAnalysis extends CommandAnalysis {
                     if (StringUtils.isNotBlank(cfCount)) {
                         // 幸运编码
                         String lKey = "luck:try:free:" + userName;
-                        // 是财阀. 每天第一次打劫 概率获得sth.
+                        // 是财阀. 且还没召唤过
                         if (StringUtils.isBlank(RedisUtil.get(lKey))) {
                             // 当前时间
                             LocalDateTime now = LocalDateTime.now();
-                            // 第二天0点过期
-                            RedisUtil.set(lKey, userName, Long.valueOf(Duration.between(now, now.toLocalDate().plusDays(1).atStartOfDay()).getSeconds()).intValue());
                             // 小冰亲密度大于2048 每天可以召唤一次鱼丸
                             if (IceNet.getUserIntimacy(userName) > 2048) {
+                                // 第二天0点过期
+                                RedisUtil.set(lKey, userName, Long.valueOf(Duration.between(now, now.toLocalDate().plusDays(1).atStartOfDay()).getSeconds()).intValue());
                                 if (StringUtils.isBlank(RedisUtil.get(Const.CURRENCY_FREE_TIME))) {
                                     RedisUtil.set(Const.CURRENCY_FREE_TIME, "聊天室活动-天降鱼丸-OpUser:" + userName, 60);
                                     Fish.sendMsg("天降鱼丸, [0,10] 随机个数. 限时 1 min. 冲鸭~");
