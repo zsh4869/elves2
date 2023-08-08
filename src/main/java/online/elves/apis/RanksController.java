@@ -10,6 +10,7 @@ import online.elves.config.Const;
 import online.elves.service.FService;
 import online.elves.utils.DateUtil;
 import online.elves.utils.RedisUtil;
+import online.elves.utils.SortUtil;
 import online.elves.utils.StrUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -54,7 +55,7 @@ public class RanksController {
             // 获取用户信息
             Map<Integer, String> userMap = fService.getUserMap(resScore.keySet().stream().map(Integer::valueOf).collect(Collectors.toList()));
             // 排序后的对象
-            LinkedHashMap<String, Integer> sorted = sortMap(resScore);
+            LinkedHashMap<String, Integer> sorted = SortUtil.sortMapWithValue(resScore);
             // 需要返回的对象
             List<JSONObject> res = Lists.newLinkedList();
             // 排序对象
@@ -109,25 +110,5 @@ public class RanksController {
             res.put(t.getValue().toString(), score + timesScore);
         }
         return res;
-    }
-
-    /**
-     * Map按照整数型的value进行降序排序，当value相同时，按照key的长度进行排序
-     *
-     * @param map
-     * @return
-     */
-    public static LinkedHashMap<String, Integer> sortMap(Map<String, Integer> map) {
-        return map.entrySet().stream().sorted(((item1, item2) -> {
-            int compare = item2.getValue().compareTo(item1.getValue());
-            if (compare == 0) {
-                if (item1.getKey().length() < item2.getKey().length()) {
-                    compare = 1;
-                } else if (item1.getKey().length() > item2.getKey().length()) {
-                    compare = -1;
-                }
-            }
-            return compare;
-        })).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
     }
 }

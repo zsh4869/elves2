@@ -19,9 +19,10 @@ import java.util.Map;
  */
 @Slf4j
 public class Destiny {
-    
+
     /**
      * 获取星座运势
+     *
      * @param consName
      * @return
      */
@@ -39,10 +40,11 @@ public class Destiny {
         }
         return cons;
     }
-    
+
     /**
      * 聚合接口的星座运势  今日
      * http://web.juhe.cn/constellation/getAll
+     *
      * @param consName
      * @param consName
      * @return
@@ -51,7 +53,7 @@ public class Destiny {
         // 参数对象
         Map<String, Object> params = Maps.newConcurrentMap();
         // api key
-        params.put("key", RedisUtil.get(Const.JU_HE_API));
+        params.put("key", RedisUtil.get(Const.JU_HE_API + ":DESTINY"));
         // 星座名称
         params.put("consName", consName);
         // 运势类型：today,tomorrow,week,month,year
@@ -78,11 +80,11 @@ public class Destiny {
         RedisUtil.set(consKey, word.toString(), Long.valueOf(Duration.between(time, time.plusDays(1).toLocalDate().atStartOfDay()).getSeconds()).intValue());
         return word.toString();
     }
-    
+
     public static void main(String[] args) {
         //log.info(getJuheConsToday("双子座", Const.FishKey.CONSTELLATION_PREFIX.value + "双子座"));
         LocalDate now = LocalDate.now();
         //log.info("今天是{}年{}月{}日, 星期{}", now.getYear(), now.getMonth().getValue(), now.getDayOfMonth(), WEEK_CN[now.getDayOfWeek().getValue()]);
     }
-    
+
 }

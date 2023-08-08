@@ -434,12 +434,18 @@ public class Fish {
      * @param body
      */
     public static void send(JSONObject body) {
-        // 返回对象
-        FResp respObj = FUtil.post("https://fishpi.cn/chat-room/send", "", body.toJSONString());
-        // 请求成功
-        if (!respObj.isOk()) {
-            log.error("chat room sendCoupon error ..." + JSON.toJSONString(respObj));
+        try {
+            // 返回对象
+            FResp respObj = FUtil.post("https://fishpi.cn/chat-room/send", "", body.toJSONString());
+            // 请求成功
+            if (!respObj.isOk()) {
+                log.error("chat room sendCoupon error ..." + JSON.toJSONString(respObj));
+            }
+        } catch (Exception e) {
+            // 发消息有可能凉了???
+            System.exit(0);
         }
+
     }
 
     /**

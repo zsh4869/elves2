@@ -733,6 +733,18 @@ public class DateUtil {
     }
 
     /**
+     * 计算时间间隔
+     *
+     * @param start
+     * @param end
+     * @param unit
+     * @return
+     */
+    public static Long getInterval(LocalDate start, LocalDate end, ChronoUnit unit) {
+        return unit.between(start, end);
+    }
+
+    /**
      * 获取年纪描述
      *
      * @param birthday

@@ -6,9 +6,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import online.elves.config.Const;
+import online.elves.third.apis.juhe.Day;
 import online.elves.utils.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 /**
@@ -16,7 +18,7 @@ import java.util.Map;
  */
 @Slf4j
 public class Letter {
-    
+
     /**
      * 获取每日一句
      */
@@ -43,5 +45,31 @@ public class Letter {
         }
         // 一句话
         return onz.getJSONArray("data").getJSONObject(0).getString("content");
+    }
+
+    /**
+     * 获取心灵鸡汤 聚合接口
+     * https://www.juhe.cn/docs/api/id/669
+     */
+    public static String getSoupJH() {
+        // 参数对象
+        Map<String, Object> params = Maps.newConcurrentMap();
+        // api key
+        params.put("key", RedisUtil.get(Const.JU_HE_API + ":SOUP"));
+        // 获取当年假日列表
+        String uri = "https://apis.juhe.cn/fapig/soup/query";
+        // 获取返回结果
+        String result = HttpUtil.get(uri, params);
+        if (StringUtils.isBlank(result)) {
+            log.warn("(╥╯^╰╥)服务器开小差了, 要不你再试一下?");
+            return "芜湖...🐔被杀完了, 等我养养~";
+        }
+        // 假日列表
+        try {
+            return JSON.parseObject(result).getJSONObject("result").getString("text");
+        } catch (Exception e) {
+            log.warn("Letter getSoupJH 反序列化异常 => {}", result);
+            return "芜湖...🐔跑了没法熬汤, 等我再抓一只~";
+        }
     }
 }

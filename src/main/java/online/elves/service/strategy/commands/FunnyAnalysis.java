@@ -43,7 +43,7 @@ public class FunnyAnalysis extends CommandAnalysis {
     /**
      * 关键字
      */
-    private static final List<String> keys = Arrays.asList("去打劫", "笑话", "捞鱼丸", "等级", "发个红包", "V50", "v50", "VME50", "vivo50", "今日水分", "15", "欧皇们", "非酋们", "探路者", "触发词", "爱的回馈");
+    private static final List<String> keys = Arrays.asList("去打劫", "笑话", "捞鱼丸", "等级", "发个红包", "来个红包", "V50", "v50", "今日水分", "15", "欧皇们", "非酋们", "探路者", "触发词", "爱的回馈");
 
     /**
      * 打劫概率
@@ -297,12 +297,11 @@ public class FunnyAnalysis extends CommandAnalysis {
                 Fish.sendMsg("亲爱的 @" + userName + " 您的聊天室等级为 " + CrLevel.getCrLvName(userName) + " [当前经验值: " + exp + "/" + crLv.end + "] " + " \n\n > 等级分为 " + String.join(" => ", Const.CHAT_ROOM_LEVEL_NAME));
                 break;
             case "发个红包":
-                Fish.sendMsg("小冰 发个红包");
+            case "来个红包":
+                Fish.sendCMD("小冰 来个红包");
                 break;
             case "V50":
             case "v50":
-            case "VME50":
-            case "vivo50":
                 String cd = "KFC:V:50:CD";
                 if (LocalDate.now().getDayOfWeek().getValue() == 4) {
                     // 幸运编码 每周四

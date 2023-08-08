@@ -166,7 +166,7 @@ public class CrMsgListener {
                 if (StringUtils.isBlank(last)) {
                     diff = 0L;
                 } else {
-                    diff = DateUtil.getInterval(DateUtil.parseLd(last).atStartOfDay().plusDays(1), now, ChronoUnit.DAYS);
+                    diff = DateUtil.getInterval(DateUtil.parseLd(last).plusDays(1), now.toLocalDate(), ChronoUnit.DAYS);
                 }
                 // 打招呼增加的内容, 几天没回来
                 String msg = "";
