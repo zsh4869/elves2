@@ -137,6 +137,7 @@ public class TaskCenter {
             }
         } else {
             // 周末三个小时
+            assert lastCR != null;
             if (lastCR.isBefore(now.minusHours(3))) {
                 System.exit(0);
             }

@@ -21,13 +21,14 @@ public class FUtil {
      * @return
      */
     public static String getSpec(String uri, String key) {
+        // 获取返回信息
+        HttpResponse response = null;
         try {
-            // 获取返回信息
-            HttpResponse response = HttpRequest.get(uri + key).header("User-Agent", UA).execute();
+            response = HttpRequest.get(uri + key).header("User-Agent", UA).execute();
             // 返回对象
             return response.body();
         } catch (Exception e) {
-            log.warn("some request get error...{}", e.getMessage());
+            log.warn("some request get spec error...{} ===> {}", e.getMessage(), JSON.toJSONString(response));
             // 怀疑坐牢了...直接自杀吧
             System.exit(0);
         }
@@ -41,13 +42,14 @@ public class FUtil {
      * @return
      */
     public static String postSpec(String uri, String key, String body) {
+        // 获取返回信息
+        HttpResponse response = null;
         try {
-            // 获取返回信息
-            HttpResponse response = HttpRequest.post(uri + key).header("User-Agent", UA).body(body).execute();
+            response = HttpRequest.post(uri + key).header("User-Agent", UA).body(body).execute();
             // 返回对象
             return response.body();
         } catch (Exception e) {
-            log.warn("some request post error...{}", e.getMessage());
+            log.warn("some request post spec error...{} ===> {}", e.getMessage(), JSON.toJSONString(response));
             // 怀疑坐牢了...直接自杀吧
             System.exit(0);
         }
@@ -61,13 +63,14 @@ public class FUtil {
      * @return
      */
     public static FResp get(String uri, String key) {
+        // 获取返回信息
+        HttpResponse response = null;
         try {
-            // 获取返回信息
-            HttpResponse response = HttpRequest.get(uri + key).header("User-Agent", UA).execute();
+            response = HttpRequest.get(uri + key).header("User-Agent", UA).execute();
             // 返回对象
             return JSON.parseObject(response.body(), FResp.class);
         } catch (Exception e) {
-            log.warn("some request get error...{}", e.getMessage());
+            log.warn("some request get error...{} ===> {}", e.getMessage(), JSON.toJSONString(response));
             // 怀疑坐牢了...直接自杀吧
             System.exit(0);
         }
@@ -81,13 +84,14 @@ public class FUtil {
      * @return
      */
     public static FResp post(String uri, String key, String body) {
+        // 获取返回信息
+        HttpResponse response = null;
         try {
-            // 获取返回信息
-            HttpResponse response = HttpRequest.post(uri + key).header("User-Agent", UA).body(body).execute();
+            response = HttpRequest.post(uri + key).header("User-Agent", UA).body(body).execute();
             // 返回对象
             return JSON.parseObject(response.body(), FResp.class);
         } catch (Exception e) {
-            log.warn("some request post error...{}", e.getMessage());
+            log.warn("some request post error...{} ===> {}", e.getMessage(), JSON.toJSONString(response));
             // 怀疑坐牢了...直接自杀吧
             System.exit(0);
         }

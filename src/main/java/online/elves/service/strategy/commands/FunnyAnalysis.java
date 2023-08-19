@@ -43,7 +43,7 @@ public class FunnyAnalysis extends CommandAnalysis {
     /**
      * 关键字
      */
-    private static final List<String> keys = Arrays.asList("去打劫", "笑话", "捞鱼丸", "等级", "发个红包", "来个红包", "V50", "v50", "今日水分", "15", "欧皇们", "非酋们", "探路者", "触发词", "爱的回馈");
+    private static final List<String> keys = Arrays.asList("去打劫", "笑话", "捞鱼丸", "等级", "发个红包", "来个红包", "V50", "v50", "今日水分", "15", "欧皇们", "非酋们", "探路者", "触发词", "爱的回馈", "窝囊费");
 
     /**
      * 打劫概率
@@ -302,31 +302,45 @@ public class FunnyAnalysis extends CommandAnalysis {
                 break;
             case "V50":
             case "v50":
-                String cd = "KFC:V:50:CD";
-                if (LocalDate.now().getDayOfWeek().getValue() == 4) {
-                    // 幸运编码 每周四
-                    String lKey = "KFC:V:50:" + userName;
-                    // 每周四只能有一次
-                    if (StringUtils.isBlank(RedisUtil.get(lKey))) {
-                        if (StringUtils.isBlank(RedisUtil.get(cd))) {
-                            // 当前时间
-                            LocalDateTime now = LocalDateTime.now();
-                            // 第二天0点过期
-                            RedisUtil.set(lKey, userName, Long.valueOf(Duration.between(now, now.toLocalDate().plusDays(1).atStartOfDay()).getSeconds()).intValue());
-                            // CD 1 min
-                            RedisUtil.set(cd, userName, 10);
-                            // 发红包
-                            Fish.sendSpecify(userName, 50, userName + " 给, 彰显实力!");
-                            // 记录排行榜
-                            RedisUtil.incrScore(Const.RANKING_PREFIX + "KFC", String.valueOf(Fish.getUserNo(userName)), 1);
-                        } else {
-                            Fish.sendMsg("@" + userName + " 不要复读, 不要着急. 我一分钟只能发六个哦~(其实能发十个, 但是我就不~ 嘻嘻)");
+            case "窝囊费":
+                // 日常奖励CD
+                String cd = "DAILY:REWARDS:CD";
+                // 幸运编码
+                String lKey = "DAILY:REWARDS:USER:" + userName;
+                // 是不是要翻倍
+                boolean isDouble = IceNet.getUserIntimacy(userName) > 8192;
+                // 当前周几
+                switch (LocalDate.now().getDayOfWeek().getValue()){
+                    case 4:
+                        if ("V50,v50".contains(commandKey)){
+                            if (isDouble){
+                                dailyRewards(userName, lKey, cd, 128, " , 小冰说多给你点!", "KFC");
+                            }else {
+                                dailyRewards(userName, lKey, cd, 50, " 给, 彰显实力!", "KFC");
+                            }
+                        }else {
+                            Fish.sendMsg("@" + userName + " 今天只能V50, 谁来也不行!");
                         }
-                    } else {
-                        Fish.sendMsg("@" + userName + " 怎么肥事儿~ 已经给你看过鱼排实力啦~");
-                    }
-                } else {
-                    Fish.sendMsg("@" + userName + " 今儿可不是疯狂星期四. 嘻嘻~ 心急吃不了热豆腐哦.");
+                        break;
+                    case 6:
+                        if ("窝囊费".contains(commandKey)){
+                            if (isDouble){
+                                dailyRewards(userName, lKey, cd, 128, " 加班辛苦了,小冰说加油!", "WNF");
+                            }else {
+                                dailyRewards(userName, lKey, cd, 66, " 这B班, 不上也行!", "WNF");
+                            }
+                        }else {
+                            Fish.sendMsg("@" + userName + " 加班不加班? 不加班就去享受自己的周末!!!");
+                        }
+                        break;
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 5:
+                    case 7:
+                    default:
+                        Fish.sendMsg("@" + userName + " 我掐指一算. 嘻嘻~ 今天什么日子都不是");
+                        break;
                 }
                 break;
             case "欧皇们":
@@ -404,6 +418,34 @@ public class FunnyAnalysis extends CommandAnalysis {
             default:
                 // 什么也不用做
                 break;
+        }
+    }
+
+    /**
+     * 每日奖励
+     * @param userName
+     * @param lKey
+     * @param cd
+     */
+    private static void dailyRewards(String userName, String lKey, String cd, int money, String memo, String rankKey) {
+        // 每天只能有一次
+        if (StringUtils.isBlank(RedisUtil.get(lKey))) {
+            if (StringUtils.isBlank(RedisUtil.get(cd))) {
+                // 当前时间
+                LocalDateTime now = LocalDateTime.now();
+                // 第二天0点过期
+                RedisUtil.set(lKey, userName, Long.valueOf(Duration.between(now, now.toLocalDate().plusDays(1).atStartOfDay()).getSeconds()).intValue());
+                // CD 10秒
+                RedisUtil.set(cd, userName, 10);
+                // 发红包
+                Fish.sendSpecify(userName, money, userName + memo);
+                // 记录排行榜
+                RedisUtil.incrScore(Const.RANKING_PREFIX + rankKey, String.valueOf(Fish.getUserNo(userName)), 1);
+            } else {
+                Fish.sendMsg("@" + userName + " 不要复读, 不要着急. 我一分钟只能发六个哦~(其实能发十个, 但是我就不~ 嘻嘻)");
+            }
+        } else {
+            Fish.sendMsg("@" + userName + " 怎么肥事儿~ 口袋空空, 我没有红包啦~");
         }
     }
 

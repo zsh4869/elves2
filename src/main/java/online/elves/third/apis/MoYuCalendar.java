@@ -27,7 +27,7 @@ public class MoYuCalendar {
     /**
      * 建站日期
      */
-    private static int since = 2020;
+    private static final int since = 2020;
 
     public static void main(String[] args) {
         log.info(getMyCal());
