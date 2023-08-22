@@ -37,7 +37,7 @@ public class AdminAnalysis extends CommandAnalysis {
      * 关键字
      */
     private static final List<String> keys =
-            Arrays.asList("送鱼翅", "送鱼丸", "欢乐时光", "天降鱼丸", "退费", "惹不起", "巡逻", "停止检查", "违禁词");
+            Arrays.asList("送鱼翅", "送鱼丸", "欢乐时光", "天降鱼丸", "退费", "惹不起", "巡逻", "停止检查", "违禁词", "调试", "关闭调试");
 
     @Override
     public boolean check(String commonKey) {
@@ -50,6 +50,16 @@ public class AdminAnalysis extends CommandAnalysis {
         if (Objects.equals(RedisUtil.get(Const.ADMIN), userName)) {
             // 缩小命令
             switch (commandKey) {
+                case "调试":
+                case "关闭调试":
+                    if (commandKey.startsWith("关闭")) {
+                        RedisUtil.del("DEBUG");
+                        Fish.sendMsg("已关闭调试模式");
+                    } else {
+                        RedisUtil.set("DEBUG", DateUtil.nowStr());
+                        Fish.sendMsg("已开启调试模式");
+                    }
+                    break;
                 case "违禁词":
                     RedisUtil.set("BLACK:WORD", RedisUtil.get("BLACK:WORD") + "," + commandDesc);
                     Fish.sendMsg("已添加违禁词[" + commandDesc + "]");

@@ -600,6 +600,8 @@ public class FService {
      * 处理红包记录
      */
     public void dealRpOpenLog() {
+        // debug 模式
+        boolean debug = StringUtils.isNotBlank(RedisUtil.get("DEBUG"));
         QueryWrapper<RpOpenLog> roCond = new QueryWrapper<>();
         // 所有待处理的
         roCond.eq("opened", 0);
@@ -607,7 +609,9 @@ public class FService {
         // 获取所有对象
         List<RpOpenLog> rpOpenLogs = rpOpenLogMapper.selectList(roCond);
         if (CollUtil.isEmpty(rpOpenLogs)) {
-            log.info("没有需要处理的打开对象");
+            if (debug){
+                log.info("没有需要处理的打开对象");
+            }
             return;
         }
         // 按照oid 分组

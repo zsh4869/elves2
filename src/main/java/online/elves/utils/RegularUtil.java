@@ -224,8 +224,6 @@ public class RegularUtil {
     }
 
     public static void main(String[] args) {
-        for (int i = 0; i < 32; i++) {
-            System.out.println((i + 1) * (i + 1) * 128);
-        }
+        System.out.printf(Boolean.toString(isOrderCase("臭宝")));
     }
 }

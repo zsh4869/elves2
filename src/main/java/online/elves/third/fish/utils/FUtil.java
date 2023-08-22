@@ -28,7 +28,7 @@ public class FUtil {
             // 返回对象
             return response.body();
         } catch (Exception e) {
-            log.warn("some request get spec error...{} ===> {}", e.getMessage(), JSON.toJSONString(response));
+            log.warn("{} some request get spec error...{} ===> {}", uri, e.getMessage(), JSON.toJSONString(response));
             // 怀疑坐牢了...直接自杀吧
             System.exit(0);
         }
@@ -49,7 +49,7 @@ public class FUtil {
             // 返回对象
             return response.body();
         } catch (Exception e) {
-            log.warn("some request post spec error...{} ===> {}", e.getMessage(), JSON.toJSONString(response));
+            log.warn("{} some request post spec error...{} ===> {}", uri, e.getMessage(), JSON.toJSONString(response));
             // 怀疑坐牢了...直接自杀吧
             System.exit(0);
         }
@@ -70,7 +70,7 @@ public class FUtil {
             // 返回对象
             return JSON.parseObject(response.body(), FResp.class);
         } catch (Exception e) {
-            log.warn("some request get error...{} ===> {}", e.getMessage(), JSON.toJSONString(response));
+            log.warn("{} some request get error...{} ===> {}", uri, e.getMessage(), JSON.toJSONString(response));
             // 怀疑坐牢了...直接自杀吧
             System.exit(0);
         }
@@ -91,7 +91,7 @@ public class FUtil {
             // 返回对象
             return JSON.parseObject(response.body(), FResp.class);
         } catch (Exception e) {
-            log.warn("some request post error...{} ===> {}", e.getMessage(), JSON.toJSONString(response));
+            log.warn("{} some request post error...{} ===> {}", uri, e.getMessage(), JSON.toJSONString(response));
             // 怀疑坐牢了...直接自杀吧
             System.exit(0);
         }

@@ -55,12 +55,15 @@ public class CrMsgListener {
                 if (CollUtil.isNotEmpty(sws)) {
                     // 消息内容
                     String md = event.getMd();
-                    // 循环敏感词
-                    for (String s : sws) {
-                        if (StringUtils.isNotBlank(s) && md.contains(s)) {
-                            // 有 敏感词... 处理掉 1 个就可以嘞.
-                            revokeJudge(userNo, userName, s, event.getOid());
-                            break;
+                    // 存在才需要循环
+                    if (StringUtils.isNotBlank(md)){
+                        // 循环敏感词
+                        for (String s : sws) {
+                            if (StringUtils.isNotBlank(s) && md.contains(s)) {
+                                // 有 敏感词... 处理掉 1 个就可以嘞.
+                                revokeJudge(userNo, userName, s, event.getOid());
+                                break;
+                            }
                         }
                     }
                 }

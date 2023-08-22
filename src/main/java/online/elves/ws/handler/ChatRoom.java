@@ -8,6 +8,7 @@ import online.elves.message.model.CrMsg;
 import online.elves.utils.DateUtil;
 import online.elves.utils.RedisUtil;
 import online.elves.ws.WsClient;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,6 +51,10 @@ public class ChatRoom {
 
     @OnMessage
     public void processMassage(String message) {
+        // debug 模式
+        if (StringUtils.isNotBlank(RedisUtil.get("DEBUG"))){
+            log.info("聊天室原始消息...{}", message);
+        }
         try {
             // 接收到消息
             CrMsg crMsg = JSON.parseObject(message, CrMsg.class);
@@ -59,9 +64,7 @@ public class ChatRoom {
             RedisUtil.set("CR:LAST:WORD", DateUtil.nowStr());
         } catch (Exception e) {
             log.info("聊天室消息...处理异常...{}", e.getMessage());
-            e.printStackTrace();
         }
-
     }
 
     @OnError

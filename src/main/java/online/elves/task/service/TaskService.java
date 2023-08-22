@@ -16,6 +16,7 @@ import online.elves.utils.DateUtil;
 import online.elves.utils.RedisUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import sun.awt.image.GifImageDecoder;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -41,12 +42,18 @@ public class TaskService {
      * 购买鱼翅
      */
     public void buyCurrency() {
-        log.info("购买鱼翅...开始处理");
+        // debug 模式
+        boolean debug = StringUtils.isNotBlank(RedisUtil.get("DEBUG"));
+        if (debug){
+            log.info("购买鱼翅...开始处理");
+        }
         // 获取购买人
         List<CurrencyLog> buyer = fService.getBuyer();
         // 没有购买者
         if (CollUtil.isEmpty(buyer)) {
-            log.info("开包, 没有购买者...结束");
+            if (debug){
+                log.info("开包, 没有购买者...结束");
+            }
             return;
         }
         // 遍历购买者
@@ -55,7 +62,9 @@ public class TaskService {
             String msg = RedisUtil.get(cl.getOid().toString());
             if (StringUtils.isBlank(msg)) {
                 // 没找到
-                log.info("没有找到信息[{}]的缓存记录.", cl.getOid());
+                if (debug){
+                    log.info("没有找到信息[{}]的缓存记录.", cl.getOid());
+                }
                 continue;
             }
             // 鱼翅对象
@@ -73,7 +82,11 @@ public class TaskService {
      * 迎新
      */
     public void welcomeV1() {
-        log.info("...开始迎新 v1.0 ...");
+        // debug 模式
+        boolean debug = StringUtils.isNotBlank(RedisUtil.get("DEBUG"));
+        if (debug){
+            log.info("...开始迎新 v1.0 ...");
+        }
         // 直接获取最近的二十个注册大哥 一分钟一次
         List<FUser> users = Fish.getRecentRegs();
         // 批量处理
@@ -83,11 +96,15 @@ public class TaskService {
             // 获取用户打招呼记录
             Double score = RedisUtil.getScore(Const.RANKING_PREFIX + "WELCOME", ut.getUserNo().toString());
             if (Objects.nonNull(score)) {
-                log.info("用户 {}  已欢迎过了..., 跳过", ut.getUserName());
+                if (debug){
+                    log.info("用户 {}  已欢迎过了..., 跳过", ut.getUserName());
+                }
                 continue;
             }
             // 开始欢迎
-            log.info("开始欢迎用户 {} ", ut.getUserName());
+            if (debug){
+                log.info("开始欢迎用户 {} ", ut.getUserName());
+            }
             // 记录欢迎的纪元日
             RedisUtil.incrScore(Const.RANKING_PREFIX + "WELCOME", ut.getUserNo().toString(), Long.valueOf(LocalDate.now().toEpochDay()).intValue());
             // 组织消息
@@ -122,7 +139,11 @@ public class TaskService {
      * 符合就回复
      */
     public void runCheckV1() {
-        log.info("...检查新人报道 1.0 ...");
+        // debug 模式
+        boolean debug = StringUtils.isNotBlank(RedisUtil.get("DEBUG"));
+        if (debug){
+            log.info("...检查新人报道 1.0 ...");
+        }
         // 遍历文章列表
         List<Long> ids = Lists.newArrayList();
         // 获取最近帖子列表 五分钟 20个应该OK吧? 新人不会一起这么报道吧???
@@ -146,7 +167,9 @@ public class TaskService {
         }
         // 不应该为空的
         if (CollUtil.isEmpty(ids)) {
-            log.info("未获取到 新人报道 / 新人报到 列表...请及时检查");
+            if (debug){
+                log.info("未获取到 新人报道 / 新人报到 列表...请及时检查");
+            }
             return;
         }
         // 遍历文章列表 回帖
@@ -154,7 +177,9 @@ public class TaskService {
             // 回帖
             checkReply(id);
         }
-        log.info("...检查新人报道 1.0 结束...");
+        if (debug){
+            log.info("...检查新人报道 1.0 结束...");
+        }
     }
 
     /**
@@ -163,13 +188,17 @@ public class TaskService {
      * @param obj
      */
     private void checkLiveness(ArticlesObj obj) {
+        // debug 模式
+        boolean debug = StringUtils.isNotBlank(RedisUtil.get("DEBUG"));
         // 今天
         LocalDate now = LocalDate.now();
         // 获取文章列表详细内容
         List<Articles> articlesList = obj.getArticles();
         // 不为空且有内容
         if (CollUtil.isNotEmpty(articlesList)) {
-            log.info("开始检查文章, 计算作者活跃度...");
+            if (debug){
+                log.info("开始检查文章, 计算作者活跃度...");
+            }
             // 遍历 计算用户活跃度 第一篇文章增加45  删除无法感知... 嘻嘻
             for (Articles o : articlesList) {
                 // 文章创建时间 转义
@@ -218,10 +247,14 @@ public class TaskService {
      * @param id
      */
     private void checkReply(Long id) {
+        // debug 模式
+        boolean debug = StringUtils.isNotBlank(RedisUtil.get("DEBUG"));
         Double score = RedisUtil.getScore(Const.WELCOME_CHECK_REPLY, id.toString());
         if (Objects.nonNull(score)) {
             // 已经评论过了
-            log.info("文章...OID:{}...已经评论...{}", id, score);
+            if (debug){
+                log.info("文章...OID:{}...已经评论...{}", id, score);
+            }
             return;
         }
         // 获取文章详细内容
@@ -248,7 +281,9 @@ public class TaskService {
             // 评论人
             if (hasReply(id, comments)) {
                 // 已经回复过了
-                log.info("文章...OID:{}...已经评论", id);
+                if (debug){
+                    log.info("文章...OID:{}...已经评论", id);
+                }
                 return;
             }
             // 检查标题是否包含新人报道
@@ -275,7 +310,9 @@ public class TaskService {
             // 不是新人报道
             return;
         }
-        log.info("文章...OID:{}...获取详情失败", id);
+        if (debug){
+            log.info("文章...OID:{}...获取详情失败", id);
+        }
     }
 
     /**
@@ -395,7 +432,9 @@ public class TaskService {
      */
     public void recordRpLog() {
         // 开始处理红包打开记录
-        log.info("开始处理红包打开记录...");
+        if (StringUtils.isNotBlank(RedisUtil.get("DEBUG"))){
+            log.info("开始处理红包打开记录...");
+        }
         fService.dealRpOpenLog();
     }
 
@@ -420,6 +459,8 @@ public class TaskService {
             RedisUtil.reSet("ONLINE:JUDGE", JSON.toJSONString(need), 1);
             return;
         }
-        log.info("执法略过, 没有需要处理的玩家~");
+        if (StringUtils.isNotBlank(RedisUtil.get("DEBUG"))){
+            log.info("执法略过, 没有需要处理的玩家~");
+        }
     }
 }
