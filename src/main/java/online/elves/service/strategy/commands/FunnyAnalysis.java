@@ -10,6 +10,7 @@ import online.elves.config.Const;
 import online.elves.enums.CrLevel;
 import online.elves.enums.Words;
 import online.elves.mapper.entity.User;
+import online.elves.service.CassetteService;
 import online.elves.service.FService;
 import online.elves.service.CurrencyService;
 import online.elves.service.strategy.CommandAnalysis;
@@ -43,7 +44,7 @@ public class FunnyAnalysis extends CommandAnalysis {
     /**
      * 关键字
      */
-    private static final List<String> keys = Arrays.asList("去打劫", "笑话", "捞鱼丸", "等级", "发个红包", "来个红包", "V50", "v50", "今日水分", "15", "欧皇们", "非酋们", "探路者", "触发词", "爱的回馈", "窝囊费", "七夕快乐");
+    private static final List<String> keys = Arrays.asList("去打劫", "笑话", "捞鱼丸", "等级", "发个红包", "来个红包", "V50", "v50", "今日水分", "15", "欧皇们", "非酋们", "探路者", "触发词", "爱的回馈", "窝囊费");
 
     /**
      * 打劫概率
@@ -102,7 +103,7 @@ public class FunnyAnalysis extends CommandAnalysis {
     public void process(String commandKey, String commandDesc, String userName) {
         // 娱乐命令
         switch (commandKey) {
-            case "七夕快乐":
+            case "20230824101011":
                 LocalDateTime now520 = LocalDateTime.now();
                 if (now520.isAfter(LocalDateTime.of(now520.toLocalDate(), LocalTime.of(18, 0, 0)))) {
                     Fish.sendMsg("亲爱的 @" + userName + " " + CrLevel.getCrLvName(userName) + " " + "  七夕活动已经结束啦~ 期待下次活动与你相遇...嘻嘻!~不要摸鱼了, 快跟最爱的Ta去过七夕吧❤️ ");
@@ -255,7 +256,7 @@ public class FunnyAnalysis extends CommandAnalysis {
                     String zzkU = RedisUtil.get(rKey);
                     if (StringUtils.isBlank(zzkU)) {
                         // 可以沾
-                        CurrencyService.sendCurrencyFree(userName, new Random().nextInt(11), zzk);
+                        CurrencyService.sendCurrencyFree(userName, CassetteService.useFishnet(userName), zzk);
                         // 设置缓存 180 肯定大于活动时间
                         RedisUtil.set(rKey, userName, 180);
                     } else {

@@ -18,6 +18,7 @@ import online.elves.mapper.entity.*;
 import online.elves.message.Publisher;
 import online.elves.message.event.CrCmdEvent;
 import online.elves.message.event.CrMsgEvent;
+import online.elves.third.apis.caiyun.model.Realtime;
 import online.elves.third.fish.Fish;
 import online.elves.third.fish.model.FUser;
 import online.elves.utils.DateUtil;
@@ -34,6 +35,7 @@ import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.function.Function;
@@ -452,8 +454,10 @@ public class FService {
         }
         // 鱼翅购买记录
         Currency currency = Currency.builder().oid(oId).user(userName).money(money).rate(rate).happy(happy).build();
-        // 写入缓存
-        RedisUtil.set(oId.toString(), JSON.toJSONString(currency));
+        // 当前时间
+        LocalDateTime now = LocalDateTime.now();
+        // 写入缓存 有效期24小时
+        RedisUtil.set(oId.toString(), JSON.toJSONString(currency), DateUtil.getInterval(now, now.plusDays(1), ChronoUnit.SECONDS));
     }
 
     /**
@@ -609,7 +613,7 @@ public class FService {
         // 获取所有对象
         List<RpOpenLog> rpOpenLogs = rpOpenLogMapper.selectList(roCond);
         if (CollUtil.isEmpty(rpOpenLogs)) {
-            if (debug){
+            if (debug) {
                 log.info("没有需要处理的打开对象");
             }
             return;

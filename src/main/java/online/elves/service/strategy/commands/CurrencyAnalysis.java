@@ -1,14 +1,21 @@
 package online.elves.service.strategy.commands;
 
+import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import online.elves.config.Const;
+import online.elves.constants.CassetteConst;
 import online.elves.enums.CrLevel;
 import online.elves.mapper.entity.User;
 import online.elves.service.CurrencyService;
 import online.elves.service.FService;
+import online.elves.service.models.cassette.Fishnet;
+import online.elves.service.models.cassette.Harpoon;
 import online.elves.service.strategy.CommandAnalysis;
 import online.elves.third.apis.IceNet;
 import online.elves.third.fish.Fish;
+import online.elves.utils.DateUtil;
 import online.elves.utils.RedisUtil;
 import online.elves.utils.RegularUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +25,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,9 +69,39 @@ public class CurrencyAnalysis extends CommandAnalysis {
                     if (lTimes < 0) {
                         lTimes = 0;
                     }
-                    Fish.sendMsg("尊敬的渔民大人 @" + userName + " " + CrLevel.getCrLvName(userName) + " " + " . 今天背包冷气很足~" +
-                            "\n\n您的`鱼翅`还有 ...`" + times + "`个~  `鱼丸`还有 ...`" + lTimes + "`个~" +
-                            "\n\n > 1 `鱼翅` == 10 `鱼丸`");
+                    // 渔网key
+                    String fishnetKey = CassetteConst.FISHNET_PREFIX + userName;
+                    // 渔网
+                    Fishnet fishnet = new Fishnet(RedisUtil.get(fishnetKey));
+                    // 鱼叉key
+                    String harpoonKey = CassetteConst.HARPOON_PREFIX + userName;
+                    // 鱼叉列表
+                    List<Harpoon> harpoons = Lists.newArrayList();
+                    // 存在就反序列化
+                    String tmp = RedisUtil.get(harpoonKey);
+                    if (StringUtils.isNotBlank(tmp)) {
+                        harpoons = JSON.parseArray(tmp, Harpoon.class);
+                    }
+                    StringBuilder msg = new StringBuilder("尊敬的渔民大人 @" + userName + " " + CrLevel.getCrLvName(userName) + " " + " . 今天背包冷气很足~").append("\n\n");
+                    msg.append("您的`鱼翅`还有 ...`").append(times).append("`个~  `鱼丸`还有 ...`").append(lTimes).append("`个~").append("\n\n");
+                    if (fishnet.getQuality() > -1) {
+                        msg.append("您的`").append(fishnet.getName()).append("`过期时间:`").append(DateUtil.formatDay(fishnet.getExpTime())).append("`\n\n");
+                    }
+                    if (CollUtil.isNotEmpty(harpoons)) {
+                        msg.append("<details>");
+                        msg.append("<summary> 鱼叉列表 👇🏻 点开查看</summary>").append("\n\n");
+                        msg.append("> 鱼叉先进先出, 不可以销毁, 背包上限`10个`~").append("\n\n");
+                        // 遍历列表
+                        for (Harpoon harpoon : harpoons) {
+                            msg.append("* `").append(harpoon.getName()).append("`  获得时间: `").append(DateUtil.formatDay(harpoon.getActTime())).append("`\n");
+                        }
+                        msg.append("</details>").append("\n\n");
+                        ;
+                    }
+                    msg.append("> 1 `鱼翅` ---> 10 `鱼丸`, 20 `鱼丸` ---> 1 `鱼翅` ~ ").append("\n");
+                    msg.append("> `鱼叉`消耗可以去biu渔场老板(#").append(RedisUtil.get(Const.ADMIN)).append(")哦~ 嘻嘻");
+                    // 发送信息
+                    Fish.sendMsg(msg.toString());
                 }
                 break;
             case "决斗":
@@ -92,9 +130,9 @@ public class CurrencyAnalysis extends CommandAnalysis {
                         RedisUtil.set("CURRENCY_FIGHT_LIMIT", "limit", st);
                     } else {
                         // 啥也不做
-                        if (StringUtils.isNotBlank(RedisUtil.get("CR:RPS:LOCK"))){
+                        if (StringUtils.isNotBlank(RedisUtil.get("CR:RPS:LOCK"))) {
                             Fish.sendMsg("亲爱的 @" + userName + " .现在是聊天高峰期，全局每30秒只允许发送一个猜拳红包，晚会儿咱们再Solo哈~");
-                        }else {
+                        } else {
                             Fish.sendMsg("亲爱的 @" + userName + " . 美酒虽好, 可也不要贪杯哦~");
                         }
                     }
@@ -131,11 +169,11 @@ public class CurrencyAnalysis extends CommandAnalysis {
                                 }
                             }
                             // 不够扣
-                            if (count * 10 > dfTimes) {
-                                Fish.send2User(userName, "亲爱的渔民大人 . 兑换 [" + count + "] `鱼翅`需要 " + count * 10 + " 个`鱼丸`~ 你背包里不够啦~");
+                            if (count * 20 > dfTimes) {
+                                Fish.send2User(userName, "亲爱的渔民大人 . 兑换 [" + count + "] `鱼翅`需要 " + count * 20 + " 个`鱼丸`~ 你背包里不够啦~");
                             } else {
                                 // 扣减鱼丸
-                                CurrencyService.sendCurrencyFree(userName, -count * 10, "`鱼丸`兑换`鱼翅`");
+                                CurrencyService.sendCurrencyFree(userName, -count * 20, "`鱼丸`兑换`鱼翅`");
                                 // 增加鱼翅
                                 CurrencyService.sendCurrency(userName, count, "`鱼丸`兑换`鱼翅`");
                             }

@@ -148,8 +148,8 @@ public class AdminAnalysis extends CommandAnalysis {
                         if (StringUtils.isBlank(RedisUtil.get(lKey))) {
                             // 当前时间
                             LocalDateTime now = LocalDateTime.now();
-                            // 小冰亲密度大于2048 每天可以召唤一次鱼丸
-                            if (IceNet.getUserIntimacy(userName) > 2048) {
+                            // 小冰亲密度大于4096 每天可以召唤一次鱼丸
+                            if (IceNet.getUserIntimacy(userName) > 4096) {
                                 // 第二天0点过期
                                 RedisUtil.set(lKey, userName, Long.valueOf(Duration.between(now, now.toLocalDate().plusDays(1).atStartOfDay()).getSeconds()).intValue());
                                 if (StringUtils.isBlank(RedisUtil.get(Const.CURRENCY_FREE_TIME))) {
@@ -159,7 +159,7 @@ public class AdminAnalysis extends CommandAnalysis {
                                     Fish.sendMsg("天降鱼丸开启中. 冲鸭~");
                                 }
                             } else {
-                                Fish.sendMsg("@" + userName + " " + CrLevel.getCrLvName(userName) + " " + " : \n\n 嘻嘻, 渔民大人~ 和小冰的亲密度要大于`2048`哦, 加油呀! ");
+                                Fish.sendMsg("@" + userName + " " + CrLevel.getCrLvName(userName) + " " + " : \n\n 嘻嘻, 渔民大人~ 和小冰的亲密度要大于`4096`哦, 加油呀! ");
                             }
                         } else {
                             Fish.sendMsg("@" + userName + " " + CrLevel.getCrLvName(userName) + " " + " : \n\n 嘻嘻, 渔民大人~ 你今天召唤过咯! ");

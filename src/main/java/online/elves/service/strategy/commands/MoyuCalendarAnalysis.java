@@ -49,8 +49,8 @@ public class MoyuCalendarAnalysis extends CommandAnalysis {
                 }
                 s = my.toString();
                 LocalDateTime now = LocalDateTime.now();
-                // 到明天还有多少秒
-                RedisUtil.set("FISH:VOCATION:WORD", s, DateUtil.getInterval(now, now.toLocalDate().plusDays(1).atStartOfDay(), ChronoUnit.SECONDS));
+                // 6小时间隔
+                RedisUtil.set("FISH:VOCATION:WORD", s, 60 * 60 * 6 + 30);
             }
             Fish.sendMsg(s);
         } else {
